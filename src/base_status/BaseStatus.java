@@ -151,7 +151,7 @@ public class BaseStatus {
 		return statusString;
 	}
 
-	// 字符串数组拼接
+	// 字符串数组的拼接
 	public static String join(String join, ArrayList<String> strAry) {
 		StringBuffer sb = new StringBuffer();
 		for (int i = 0; i < strAry.size(); i++) {
