@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" build-on-make="true" name="Test-AliTrans:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/Test_AliTrans_jar</output-path>
+    <root id="archive" name="Test-AliTrans.jar">
+      <element id="module-output" name="Test-AliTrans" />
+    </root>
+  </artifact>
+</component>
