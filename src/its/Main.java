@@ -32,8 +32,8 @@ public class Main {
 
             TrafficCrossroad cr = traffic.mCrosses.get(id);
 
-            for (int i = 0; i < cr.neighbours.length; i++) {
-                if (cr.neighbours[i].compareTo(frmId) == 0) {
+            for (int i = 0; i < cr.neighbors.length; i++) {
+                if (cr.neighbors[i].compareTo(frmId) == 0) {
                     ret.get(id)[i] = flow;
                 }
             }
@@ -58,7 +58,7 @@ public class Main {
             String cid = entry.getKey();
             TrafficCrossroad cross = entry.getValue();
 
-            int setting = cross.lightSettingHistory[time];
+            int setting = cross.mLightSettingHistory[time];
 
             int[] status = new int[12];
             if (setting == 0) {//水平方向
@@ -90,7 +90,7 @@ public class Main {
             }
 
             for (int i = 0; i < 4; i++) {
-                String dstId = cross.neighbours[i];
+                String dstId = cross.neighbors[i];
                 if (dstId.compareTo(Constants.LIGHT_NONE) != 0) {
                     if (cnt > 0) {
                         sb.append(";");

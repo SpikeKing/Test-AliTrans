@@ -3,47 +3,48 @@ package its;
 import java.util.ArrayList;
 import java.util.List;
 
-/***
- * 
+/**
  * 交通十字路口
- *
  */
-public class TrafficCrossroad 
-{
-	public String id; //路口id
-	public String[] neighbours; //相邻的路口,顺序为左上右下
-	
-	public int[] currentFlow; //当前流量
-	public int currentTime; //当前时间
-	public List<int[] > flowHistory; //历史流量
-	public int[] lightSettingHistory; //历史设定状态
-	public int[][] flowAdd; //每个时间段突然出现的流量（预估）
-	
-	public void setNeightbours(String left, String up, String right, String down)
-	{
-		this.neighbours = new String[4];
-		neighbours[0] = left;
-		neighbours[1] = up;
-		neighbours[2] = right;
-		neighbours[3] = down;
-	}
-	
-	public TrafficCrossroad(String id)
-	{
-		this.id = id;
-		
-		this.flowAdd = new int[Constants.MAX_TIME][];
-		for(int i=0;i<flowAdd.length;i++)
-		{
-			flowAdd[i] = new int[4];
-		}
-		
-		this.lightSettingHistory = new int[Constants.MAX_TIME+1];
-		flowHistory = new ArrayList<int[]>();
-	}
-	
-	public void setLight(int setting, int time)
-	{
-		this.lightSettingHistory[time] = setting;
-	}
+public class TrafficCrossroad {
+
+    public String mId; //路口id
+    public String[] neighbors; //相邻的路口,顺序为左上右下
+
+    public int[] currentFlow; //当前流量
+    public int currentTime; //当前时间
+    public List<int[]> flowHistory; //历史流量
+    public int[] mLightSettingHistory; //历史设定状态
+
+    //每个时间段增加的流量（预估），第1维表示流量，第2维表示方向[0-3]
+    public int[][] mFlowNeighborAdd;
+
+    // 设置邻居
+    public void setNeighbors(
+            String left, String up, String right, String down) {
+        neighbors = new String[4];
+        neighbors[0] = left;
+        neighbors[1] = up;
+        neighbors[2] = right;
+        neighbors[3] = down;
+    }
+
+    // 路口的ID - 字符串
+    public TrafficCrossroad(String id) {
+
+        mId = id;
+
+        mFlowNeighborAdd = new int[Constants.MAX_TIME][];
+
+        for (int i = 0; i < mFlowNeighborAdd.length; i++) {
+            mFlowNeighborAdd[i] = new int[4];
+        }
+
+        mLightSettingHistory = new int[Constants.MAX_TIME + 1];
+        flowHistory = new ArrayList<int[]>();
+    }
+
+    public void setLight(int setting, int time) {
+        mLightSettingHistory[time] = setting;
+    }
 }

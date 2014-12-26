@@ -145,7 +145,7 @@ public class Algorithms {
         TrafficCrossroad cross = traffic.mCrosses.get(dstId);
 
         if (cross != null) {
-            String[] nns = cross.neighbours;
+            String[] nns = cross.neighbors;
 
             for (int i = 0; i < nns.length; i++) {
                 if (nns[i].compareTo(frmId) == 0) {
@@ -189,7 +189,7 @@ public class Algorithms {
         for (Map.Entry<String, float[]> entry : cflow.entrySet()) {
             String cid = entry.getKey();
             float[] f = entry.getValue();
-            String[] nns = traffic.mCrosses.get(cid).neighbours;
+            String[] nns = traffic.mCrosses.get(cid).neighbors;
 
             for (int i = 0; i < f.length; i++) {
                 String frm = cid;
@@ -322,7 +322,7 @@ public class Algorithms {
      * @return 是否违反公平原则
      */
     public static boolean IsMaxInterval(String cid, int time, int set, TrafficGraph traffic) {
-        int[] history = traffic.mCrosses.get(cid).lightSettingHistory;
+        int[] history = traffic.mCrosses.get(cid).mLightSettingHistory;
 
         if (time <= Constants.MAX_LIGHT_INTERVAL) {
             return false;
