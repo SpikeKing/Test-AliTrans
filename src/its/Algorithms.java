@@ -27,7 +27,7 @@ public class Algorithms {
      * @param prob - 概率alpha,beta,gamma
      * @return 流量
      */
-    public static int[] sampleData(int x, float[] prob) {
+    private static int[] getPredictFlow(int x, float[] prob) {
         int[] ret = new int[prob.length];
         for (int i = 0; i < prob.length; i++) {
             ret[i] = (int) Math.ceil(((float) x) * prob[i]);
@@ -40,31 +40,37 @@ public class Algorithms {
      * 根据当前四个方向的流量，和转弯概率计算出车辆流动情况
      *
      * @param trafficStatus - 四个方向的流量
-     * @param probaTurn     - 转弯概率alpha,beta,gamma
      * @return 车辆流动情况
      */
-    public static CrossFlow CalcCrossFlow(int[] trafficStatus, float[] probaTurn) {
+    public static CrossFlow calCrossFlow(int[] trafficStatus) {
+
+        // 转弯概率左0.1, 中0.8, 右0.1
+        float[] turnProb = Constants.TURN_PROB;
+
         CrossFlow flow = new CrossFlow();
-        int[] t = sampleData(trafficStatus[0], probaTurn);
 
-        flow.flowL2U = Math.min((int) Constants.MAX_THROUGH[0], t[0]);
-        flow.flowL2R = Math.min((int) Constants.MAX_THROUGH[1], t[1]);
-        flow.flowL2D = Math.min((int) Constants.MAX_THROUGH[2], t[2]);
+        /**
+         * 和最大流量比较，选择单次通过量
+         */
+        int[] t = getPredictFlow(trafficStatus[0], turnProb);
+        flow.flowL2U = Math.min((int) Constants.MAX_THROUGH_FLOW[0], t[0]);
+        flow.flowL2R = Math.min((int) Constants.MAX_THROUGH_FLOW[1], t[1]);
+        flow.flowL2D = Math.min((int) Constants.MAX_THROUGH_FLOW[2], t[2]);
 
-        t = sampleData(trafficStatus[1], probaTurn);
-        flow.flowU2R = Math.min((int) Constants.MAX_THROUGH[0], t[0]);
-        flow.flowU2D = Math.min((int) Constants.MAX_THROUGH[1], t[1]);
-        flow.flowU2L = Math.min((int) Constants.MAX_THROUGH[2], t[2]);
+        t = getPredictFlow(trafficStatus[1], turnProb);
+        flow.flowU2R = Math.min((int) Constants.MAX_THROUGH_FLOW[0], t[0]);
+        flow.flowU2D = Math.min((int) Constants.MAX_THROUGH_FLOW[1], t[1]);
+        flow.flowU2L = Math.min((int) Constants.MAX_THROUGH_FLOW[2], t[2]);
 
-        t = sampleData(trafficStatus[2], probaTurn);
-        flow.flowR2D = Math.min((int) Constants.MAX_THROUGH[0], t[0]);
-        flow.flowR2L = Math.min((int) Constants.MAX_THROUGH[1], t[1]);
-        flow.flowR2U = Math.min((int) Constants.MAX_THROUGH[2], t[2]);
+        t = getPredictFlow(trafficStatus[2], turnProb);
+        flow.flowR2D = Math.min((int) Constants.MAX_THROUGH_FLOW[0], t[0]);
+        flow.flowR2L = Math.min((int) Constants.MAX_THROUGH_FLOW[1], t[1]);
+        flow.flowR2U = Math.min((int) Constants.MAX_THROUGH_FLOW[2], t[2]);
 
-        t = sampleData(trafficStatus[3], probaTurn);
-        flow.flowD2L = Math.min((int) Constants.MAX_THROUGH[0], t[0]);
-        flow.flowD2U = Math.min((int) Constants.MAX_THROUGH[1], t[1]);
-        flow.flowD2R = Math.min((int) Constants.MAX_THROUGH[2], t[2]);
+        t = getPredictFlow(trafficStatus[3], turnProb);
+        flow.flowD2L = Math.min((int) Constants.MAX_THROUGH_FLOW[0], t[0]);
+        flow.flowD2U = Math.min((int) Constants.MAX_THROUGH_FLOW[1], t[1]);
+        flow.flowD2R = Math.min((int) Constants.MAX_THROUGH_FLOW[2], t[2]);
 
         return flow;
     }
@@ -165,7 +171,7 @@ public class Algorithms {
     public static float[] CalcTurnFlow(float flow, float[] turnProba) {
         float[] turn = Utils.ArrayScale(turnProba, flow);
         for (int i = 0; i < turn.length; i++) {
-            turn[i] = Math.min(Constants.MAX_THROUGH[i], turn[i]);
+            turn[i] = Math.min(Constants.MAX_THROUGH_FLOW[i], turn[i]);
         }
         return turn;
     }
@@ -174,26 +180,26 @@ public class Algorithms {
      * 根据当前流量计算各个节点的流出量
      *
      * @param traffic   - 交通结构图
-     * @param cflow     - 当前流量
-     * @param turnProba - 转弯概率
+     * @param currentFlow     - 当前流量
+     * @param turnProb - 转弯概率
      * @return 各个节点的流出量
      */
     public static Map<String, float[]> CalcOutFlow(
-            TrafficGraph traffic, Map<String, float[]> cflow, float[] turnProba) {
+            TrafficGraph traffic, Map<String, float[]> currentFlow, float[] turnProb) {
 
         Map<String, float[]> ret = new HashMap<String, float[]>();
         for (String cid : traffic.mCrosses.keySet()) {
             ret.put(cid, new float[4]);
         }
 
-        for (Map.Entry<String, float[]> entry : cflow.entrySet()) {
+        for (Map.Entry<String, float[]> entry : currentFlow.entrySet()) {
             String cid = entry.getKey();
             float[] f = entry.getValue();
             String[] nns = traffic.mCrosses.get(cid).Neighbors;
 
             for (int i = 0; i < f.length; i++) {
                 String frm = cid;
-                float[] tf = CalcTurnFlow(f[i], turnProba);
+                float[] tf = CalcTurnFlow(f[i], turnProb);
 
                 for (int j = 0; j < tf.length; j++) {
                     int idst = (i + j) % 4;
@@ -215,12 +221,12 @@ public class Algorithms {
      * @param currentFlow 当前流量
      * @return 下个时间段的流量
      */
-    public static Map<String, float[]> Forward(TrafficGraph traffic,
+    private static Map<String, float[]> Forward(TrafficGraph traffic,
                                                Map<String, float[]> currentFlow) {
         Map<String, float[]> ret = CopyFlow(currentFlow);
-        Map<String, float[]> outf = CalcOutFlow(traffic, ret, Constants.TURN_PROBA);
+        Map<String, float[]> outFlow = CalcOutFlow(traffic, ret, Constants.TURN_PROB);
 
-        FlowAdd(ret, outf);
+        FlowAdd(ret, outFlow);
         return ret;
     }
 
@@ -233,7 +239,7 @@ public class Algorithms {
      */
     public static Map<String, float[]> Backward(TrafficGraph traffic,
                                                 Map<String, float[]> currentCost) {
-        return CalcOutFlow(traffic, currentCost, Constants.TURN_PROBA_REV);
+        return CalcOutFlow(traffic, currentCost, Constants.TURN_PROB);
     }
 
     private static void FlowAdd(Map<String, float[]> dst, Map<String, float[]> src) {
@@ -281,7 +287,7 @@ public class Algorithms {
      * @param interval    前馈时间个数
      * @return 每个节点对应4条边的权重
      */
-    public static Map<String, float[]> FlowPropagate(TrafficGraph traffic, int currentTime,
+    private static Map<String, float[]> FlowPropagate(TrafficGraph traffic, int currentTime,
                                                      int interval) {
 
         Map<String, float[]> currentFlow = traffic.getCurrentFlow();
@@ -357,7 +363,7 @@ public class Algorithms {
             float[] flow = entry.getValue();
 
             int[] flowInt = Utils.ArrayFloat2Int(flow);
-            CrossFlow cf = CalcCrossFlow(flowInt, Constants.TURN_PROBA);
+            CrossFlow cf = calCrossFlow(flowInt);
 
             float[] costs = JudgeCost(flowInt, estimateCost.get(cid), cf);
 
@@ -409,10 +415,10 @@ public class Algorithms {
     }
 
     /**
-     * @param traffic
-     * @param flow
-     * @param time
-     * @return
+     * @param traffic 交通灯的图
+     * @param flow 新增流量
+     * @param time 时间段
+     * @return 概率
      */
     public static float Solve(TrafficGraph traffic, Map<String, int[]> flow, int time) {
         traffic.setCurrentFlow(flow);

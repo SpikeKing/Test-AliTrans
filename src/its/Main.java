@@ -125,24 +125,12 @@ public class Main {
 
 
     public static void main(String args[]) throws IOException {
-        // initialize
+
+        // 交通结构图
         TrafficGraph traffic = new TrafficGraph();
 
-        // 禁止从文件读取数据
-//		BufferedReader reader = new BufferedReader(new InputStreamReader(
-//				Main.class.getResourceAsStream(Constants.FILENAME_TRAFFIC)));
-//		BufferedReader readerFlow = new BufferedReader( new InputStreamReader(
-//				Main.class.getResourceAsStream(Constants.FILENAME_FLOW_ADD)));
-
-        //读入红绿灯的结构图
-//		traffic.load(reader);
-        //读入每个时刻突然出现的流量
-//		traffic.loadFlowAdd(readerFlow);
-//		reader.close();
-//		readerFlow.close();
-
         // 读入红绿灯的结构图
-        traffic.loadv2();
+        traffic.loadLights();
 
         // main process
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
