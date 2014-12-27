@@ -8,43 +8,43 @@ import java.util.List;
  */
 public class TrafficCrossroad {
 
-    public String mId; //路口id
-    public String[] neighbors; //相邻的路口,顺序为左上右下
+    public String Id; //路口id
+    public String[] Neighbors; //相邻的路口,顺序为左上右下
 
-    public int[] currentFlow; //当前流量
-    public int currentTime; //当前时间
-    public List<int[]> flowHistory; //历史流量
-    public int[] mLightSettingHistory; //历史设定状态
+    public int[] CurrentFlow; //当前流量
+    public int CurrentTime; //当前时间
+    public List<int[]> FlowHistory; //历史流量
+    public int[] LightSettingHistory; //历史设定状态
 
     //每个时间段增加的流量（预估），第1维表示流量，第2维表示方向[0-3]
-    public int[][] mFlowNeighborAdd;
+    public int[][] FlowNeighborAdd;
 
     // 设置邻居
     public void setNeighbors(
             String left, String up, String right, String down) {
-        neighbors = new String[4];
-        neighbors[0] = left;
-        neighbors[1] = up;
-        neighbors[2] = right;
-        neighbors[3] = down;
+        Neighbors = new String[4];
+        Neighbors[0] = left;
+        Neighbors[1] = up;
+        Neighbors[2] = right;
+        Neighbors[3] = down;
     }
 
     // 路口的ID - 字符串
     public TrafficCrossroad(String id) {
 
-        mId = id;
+        Id = id;
 
-        mFlowNeighborAdd = new int[Constants.MAX_TIME][];
+        FlowNeighborAdd = new int[Constants.MAX_TIME][];
 
-        for (int i = 0; i < mFlowNeighborAdd.length; i++) {
-            mFlowNeighborAdd[i] = new int[4];
+        for (int i = 0; i < FlowNeighborAdd.length; i++) {
+            FlowNeighborAdd[i] = new int[4];
         }
 
-        mLightSettingHistory = new int[Constants.MAX_TIME + 1];
-        flowHistory = new ArrayList<int[]>();
+        LightSettingHistory = new int[Constants.MAX_TIME + 1];
+        FlowHistory = new ArrayList<int[]>();
     }
 
     public void setLight(int setting, int time) {
-        mLightSettingHistory[time] = setting;
+        LightSettingHistory[time] = setting;
     }
 }

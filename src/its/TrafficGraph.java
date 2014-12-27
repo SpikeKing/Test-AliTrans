@@ -183,9 +183,9 @@ public class TrafficGraph {
             if (vertex != null) {
                 String[] flows = Arrays.copyOfRange(parts, 2, parts.length);
                 for (int i = 0; i < 4; i++) {
-                    if (vertex.neighbors[i].compareTo(frmId) == 0) {
+                    if (vertex.Neighbors[i].compareTo(frmId) == 0) {
                         for (int j = 0; j < flows.length; j++) {
-                            vertex.mFlowNeighborAdd[j][i] = Integer.parseInt(flows[j]);
+                            vertex.FlowNeighborAdd[j][i] = Integer.parseInt(flows[j]);
                         }
                     }
                 }
@@ -226,8 +226,8 @@ public class TrafficGraph {
                 if (vertex != null) {
                     // 四个方向
                     for (int i = 0; i < 4; i++) {
-                        if (vertex.neighbors[i].compareTo(frmId) == 0) {
-                            vertex.mFlowNeighborAdd[time][i] = flow; // 每个时间短增加的流量
+                        if (vertex.Neighbors[i].compareTo(frmId) == 0) {
+                            vertex.FlowNeighborAdd[time][i] = flow; // 每个时间短增加的流量
                         }
                     }
                 }
@@ -246,9 +246,9 @@ public class TrafficGraph {
         for (TrafficCrossroad cross : this.mCrosses.values()) {
             float[] f = new float[4];
             for (int i = 0; i < f.length; i++) {
-                f[i] = (float) cross.currentFlow[i];
+                f[i] = (float) cross.CurrentFlow[i];
             }
-            ret.put(cross.mId, f);
+            ret.put(cross.Id, f);
         }
         return ret;
     }
@@ -264,9 +264,9 @@ public class TrafficGraph {
         for (TrafficCrossroad cross : this.mCrosses.values()) {
             int[] f = new int[4];
             for (int i = 0; i < f.length; i++) {
-                f[i] = (int) cross.flowHistory.get(time)[i];
+                f[i] = (int) cross.FlowHistory.get(time)[i];
             }
-            ret.put(cross.mId, f);
+            ret.put(cross.Id, f);
         }
         return ret;
     }
@@ -279,7 +279,7 @@ public class TrafficGraph {
      * @return
      */
     public int[] getFlowAdd(String cid, int time) {
-        return this.mCrosses.get(cid).mFlowNeighborAdd[time];
+        return this.mCrosses.get(cid).FlowNeighborAdd[time];
     }
 
     /**
@@ -311,7 +311,7 @@ public class TrafficGraph {
     public void saveCurrentFlow() {
         for (Map.Entry<String, TrafficCrossroad> entry : mCrosses.entrySet()) {
             TrafficCrossroad cross = entry.getValue();
-            cross.flowHistory.add(cross.currentFlow.clone());
+            cross.FlowHistory.add(cross.CurrentFlow.clone());
         }
     }
 
@@ -320,7 +320,7 @@ public class TrafficGraph {
                 .entrySet()) {
             String cid = entry.getKey();
             TrafficCrossroad cross = entry.getValue();
-            cross.currentFlow = flow.get(cid).clone();
+            cross.CurrentFlow = flow.get(cid).clone();
         }
     }
 
@@ -334,7 +334,7 @@ public class TrafficGraph {
     public int findNeighbourIndex(String dstId, String frmId) {
         TrafficCrossroad cr = this.mCrosses.get(dstId);
         for (int i = 0; i < 4; i++) {
-            if (cr.neighbors[i].compareTo(frmId) == 0) {
+            if (cr.Neighbors[i].compareTo(frmId) == 0) {
                 return i;
             }
         }
@@ -352,10 +352,10 @@ public class TrafficGraph {
         Map<String, int[]> flow = this.getFlow(time);
 
         for (TrafficCrossroad cross : this.mCrosses.values()) {
-            String cid = cross.mId;
-            int setting = cross.mLightSettingHistory[time];
+            String cid = cross.Id;
+            int setting = cross.LightSettingHistory[time];
             CrossFlow cf = Algorithms.CalcCrossFlow(
-                    cross.flowHistory.get(time), Constants.TURN_PROBA);
+                    cross.FlowHistory.get(time), Constants.TURN_PROBA);
             if (setting == 0) {
                 cf.flowD2L = 0;
                 cf.flowD2U = 0;
@@ -376,11 +376,11 @@ public class TrafficGraph {
 
             int[] nis = new int[4];
             for (int i = 0; i < 4; i++) {
-                nis[i] = findNeighbourIndex(cross.neighbors[0], cid);
+                nis[i] = findNeighbourIndex(cross.Neighbors[0], cid);
             }
 
-            if (cross.neighbors[0].compareTo(Constants.LIGHT_NONE) != 0) {
-                flow.get(cross.neighbors[0])[nis[0]] += cf.flowD2L
+            if (cross.Neighbors[0].compareTo(Constants.LIGHT_NONE) != 0) {
+                flow.get(cross.Neighbors[0])[nis[0]] += cf.flowD2L
                         + cf.flowD2R + cf.flowD2U;
             }
 
