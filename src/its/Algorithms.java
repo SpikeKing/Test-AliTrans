@@ -328,7 +328,7 @@ public class Algorithms {
      * @return 是否违反公平原则
      */
     public static boolean IsMaxInterval(String cid, int time, int set, TrafficGraph traffic) {
-        int[] history = traffic.getCrosses().get(cid).LightSettingHistory;
+        int[] history = traffic.getCrosses().get(cid).getLightSettings();
 
         if (time <= Constants.MAX_LIGHT_INTERVAL) {
             return false;
@@ -416,12 +416,12 @@ public class Algorithms {
 
     /**
      * @param traffic 交通灯的图
-     * @param flow 新增流量
+     * @param flowMap 新增流量
      * @param time 时间段
      * @return 概率
      */
-    public static float Solve(TrafficGraph traffic, Map<String, int[]> flow, int time) {
-        traffic.setCurrentFlow(flow);
+    public static float Solve(TrafficGraph traffic, Map<String, int[]> flowMap, int time) {
+        traffic.setCurrentFlow(flowMap);
         return SolveSingle(traffic, time);
     }
 }

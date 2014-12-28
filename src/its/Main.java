@@ -13,7 +13,7 @@ public class Main {
      *
      * @param traffic - 交通结构图
      * @param line    - 输出字符串
-     * @return 流量map
+     * @return 流量[一个点，周围4个的流量]
      */
     public static Map<String, int[]> String2Flow(TrafficGraph traffic, String line) {
         Map<String, int[]> ret = new HashMap<String, int[]>();
@@ -25,7 +25,9 @@ public class Main {
         String[] parts = line.split(";");
 
         for (String part : parts) {
+
             String[] pp = part.split(",");
+
             String id = pp[0];
             String frmId = pp[1];
             int flow = Integer.parseInt(pp[2]);
@@ -33,7 +35,7 @@ public class Main {
             TrafficCrossroad cr = traffic.getCrosses().get(id);
 
             for (int i = 0; i < cr.getNeighbors().length; i++) {
-                if (cr.getNeighbor(i).compareTo(frmId) == 0) {
+                if (cr.getNeighbor(i).equals(frmId)) {
                     ret.get(id)[i] = flow;
                 }
             }
@@ -58,7 +60,7 @@ public class Main {
             String cid = entry.getKey();
             TrafficCrossroad cross = entry.getValue();
 
-            int setting = cross.LightSettingHistory[time];
+            int setting = cross.getLightSetting(time);
 
             int[] status = new int[12];
             if (setting == 0) {//水平方向
@@ -88,6 +90,21 @@ public class Main {
                 status[10] = 1;
                 status[11] = 1;
             }
+
+//            if (time%60 > 5  && time%60 < 10) {
+//                status[0] = 1;
+//                status[1] = 1;
+//                status[2] = 1;
+//                status[3] = 1;
+//                status[4] = 1;
+//                status[5] = 1;
+//                status[6] = 1;
+//                status[7] = 1;
+//                status[8] = 1;
+//                status[9] = 1;
+//                status[10] = 1;
+//                status[11] = 1;
+//            }
 
             // 更新T型路口的方向
             for (int i=0; i<4; ++i) {
