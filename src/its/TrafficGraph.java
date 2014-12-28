@@ -11,10 +11,16 @@ import java.util.Map;
  */
 public class TrafficGraph {
 
-    public Map<String, TrafficCrossroad> mCrosses; // 交通路口
+    // 路口节点的集合，路口节点-附件节点
+    private Map<String, TrafficCrossRoad> mCrosses;
 
-    TrafficGraph() {
-        mCrosses = new HashMap<String, TrafficCrossroad>();
+    public TrafficGraph() {
+        mCrosses = new HashMap<String, TrafficCrossRoad>();
+    }
+
+    // 返回路口
+    public Map<String, TrafficCrossRoad> getCrosses() {
+        return mCrosses;
     }
 
 //    public static void main(String args[]) {
@@ -22,7 +28,9 @@ public class TrafficGraph {
 //        tg.loadLights();
 //    }
 
-    // 读取红绿灯结构图
+    /**
+     * 读取红绿灯的结构图，存储在Map<String, TrafficCrossRoad>中，路口和十字路口信息；
+     */
     public void loadLights() {
 
         Map<String, List<String[]>> preMap = new HashMap<String, List<String[]>>();
@@ -100,7 +108,7 @@ public class TrafficGraph {
                 }
             }
 
-            TrafficCrossroad cross = new TrafficCrossroad(light);
+            TrafficCrossRoad cross = new TrafficCrossRoad(light);
             cross.setNeighbors(left, up, right, down);
 
 //            System.out.println("十字路口的灯:" + light + ";"
@@ -111,12 +119,12 @@ public class TrafficGraph {
     }
 
     /**
-     * 存储即时增量数据
+     * 存储即时增量数据R
      *
      * @param line 所有流量段
      * @param time 时间节点
      */
-    public void loadFlowAddv2(String line, int time) {
+    public void addFlows(String line, int time) {
 
         if (!"end".equalsIgnoreCase(line)) {
 
@@ -129,14 +137,23 @@ public class TrafficGraph {
                 int flow = Integer.parseInt(pp[2]); // 流量
 
                 // 十字路口的节点
-                TrafficCrossroad vertex = mCrosses.get(dstId);
+                TrafficCrossRoad cross = mCrosses.get(dstId);
 
                 // 存储每个节点的增量数据
-                if (vertex != null) {
+                if (cross != null) {
                     // 四个方向
                     for (int i = 0; i < 4; i++) {
-                        if (vertex.Neighbors[i].compareTo(frmId) == 0) {
-                            vertex.FlowNeighborAdd[time][i] = flow; // 每个时间短增加的流量
+                        if (cross.getNeighbor(i).equals(frmId)) {
+
+                            // 每个时间段增加的流量
+                            cross.setFlowOfTimeAdd(time, i, flow);
+
+                            // 添加总体流量
+                            cross.addFlowOfTotal(i, flow);
+
+                            cross.setFlowOfCurrent(i, flow);
+
+                            // 每个时间段增加的流量
                         }
                     }
                 }
@@ -152,12 +169,12 @@ public class TrafficGraph {
      */
     public Map<String, float[]> getCurrentFlow() {
         Map<String, float[]> ret = new HashMap<String, float[]>();
-        for (TrafficCrossroad cross : this.mCrosses.values()) {
+        for (TrafficCrossRoad cross : this.mCrosses.values()) {
             float[] f = new float[4];
             for (int i = 0; i < f.length; i++) {
-                f[i] = (float) cross.CurrentFlow[i];
+                f[i] = (float) cross.getFlowOfCurrent(i);
             }
-            ret.put(cross.Id, f);
+            ret.put(cross.getId(), f);
         }
         return ret;
     }
@@ -170,12 +187,12 @@ public class TrafficGraph {
      */
     public Map<String, int[]> getFlow(int time) {
         Map<String, int[]> ret = new HashMap<String, int[]>();
-        for (TrafficCrossroad cross : this.mCrosses.values()) {
+        for (TrafficCrossRoad cross : this.mCrosses.values()) {
             int[] f = new int[4];
             for (int i = 0; i < f.length; i++) {
                 f[i] = (int) cross.FlowHistory.get(time)[i];
             }
-            ret.put(cross.Id, f);
+            ret.put(cross.getId(), f);
         }
         return ret;
     }
@@ -188,7 +205,7 @@ public class TrafficGraph {
      * @return
      */
     public int[] getFlowAdd(String cid, int time) {
-        return this.mCrosses.get(cid).FlowNeighborAdd[time];
+        return mCrosses.get(cid).getAllFlowsOfTimeAdd(time);
     }
 
     /**
@@ -218,18 +235,18 @@ public class TrafficGraph {
     }
 
     public void saveCurrentFlow() {
-        for (Map.Entry<String, TrafficCrossroad> entry : mCrosses.entrySet()) {
-            TrafficCrossroad cross = entry.getValue();
-            cross.FlowHistory.add(cross.CurrentFlow.clone());
+        for (Map.Entry<String, TrafficCrossRoad> entry : mCrosses.entrySet()) {
+            TrafficCrossRoad cross = entry.getValue();
+            cross.FlowHistory.add(cross.getFlowsOfCurrent().clone());
         }
     }
 
     public void setCurrentFlow(Map<String, int[]> flow) {
-        for (Map.Entry<String, TrafficCrossroad> entry : this.mCrosses
+        for (Map.Entry<String, TrafficCrossRoad> entry : this.mCrosses
                 .entrySet()) {
             String cid = entry.getKey();
-            TrafficCrossroad cross = entry.getValue();
-            cross.CurrentFlow = flow.get(cid).clone();
+            TrafficCrossRoad cross = entry.getValue();
+            cross.setFlowsOfCurrent(flow.get(cid).clone());
         }
     }
 
@@ -241,9 +258,9 @@ public class TrafficGraph {
      * @return
      */
     public int findNeighbourIndex(String dstId, String frmId) {
-        TrafficCrossroad cr = this.mCrosses.get(dstId);
+        TrafficCrossRoad cr = this.mCrosses.get(dstId);
         for (int i = 0; i < 4; i++) {
-            if (cr.Neighbors[i].compareTo(frmId) == 0) {
+            if (cr.getNeighbor(i).compareTo(frmId) == 0) {
                 return i;
             }
         }
@@ -260,8 +277,8 @@ public class TrafficGraph {
     public Map<String, int[]> computeNextFlow(int time) {
         Map<String, int[]> flow = this.getFlow(time);
 
-        for (TrafficCrossroad cross : this.mCrosses.values()) {
-            String cid = cross.Id;
+        for (TrafficCrossRoad cross : this.mCrosses.values()) {
+            String cid = cross.getId();
             int setting = cross.LightSettingHistory[time];
             CrossFlow cf = Algorithms.calCrossFlow(cross.FlowHistory.get(time));
             if (setting == 0) {
@@ -284,11 +301,11 @@ public class TrafficGraph {
 
             int[] nis = new int[4];
             for (int i = 0; i < 4; i++) {
-                nis[i] = findNeighbourIndex(cross.Neighbors[0], cid);
+                nis[i] = findNeighbourIndex(cross.getNeighbor(0), cid);
             }
 
-            if (cross.Neighbors[0].compareTo(Constants.LIGHT_NONE) != 0) {
-                flow.get(cross.Neighbors[0])[nis[0]] += cf.flowD2L
+            if (cross.getNeighbor(0).compareTo(Constants.LIGHT_NONE) != 0) {
+                flow.get(cross.getNeighbor(0))[nis[0]] += cf.flowD2L
                         + cf.flowD2R + cf.flowD2U;
             }
 

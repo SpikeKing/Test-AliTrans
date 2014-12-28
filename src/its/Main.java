@@ -18,7 +18,7 @@ public class Main {
     public static Map<String, int[]> String2Flow(TrafficGraph traffic, String line) {
         Map<String, int[]> ret = new HashMap<String, int[]>();
 
-        for (String id : traffic.mCrosses.keySet()) {
+        for (String id : traffic.getCrosses().keySet()) {
             ret.put(id, new int[4]);
         }
 
@@ -30,10 +30,10 @@ public class Main {
             String frmId = pp[1];
             int flow = Integer.parseInt(pp[2]);
 
-            TrafficCrossroad cr = traffic.mCrosses.get(id);
+            TrafficCrossRoad cr = traffic.getCrosses().get(id);
 
-            for (int i = 0; i < cr.Neighbors.length; i++) {
-                if (cr.Neighbors[i].compareTo(frmId) == 0) {
+            for (int i = 0; i < cr.getNeighbors().length; i++) {
+                if (cr.getNeighbor(i).compareTo(frmId) == 0) {
                     ret.get(id)[i] = flow;
                 }
             }
@@ -54,9 +54,9 @@ public class Main {
         StringBuilder sb = new StringBuilder();
 
         int cnt = 0;
-        for (Map.Entry<String, TrafficCrossroad> entry : traffic.mCrosses.entrySet()) {
+        for (Map.Entry<String, TrafficCrossRoad> entry : traffic.getCrosses().entrySet()) {
             String cid = entry.getKey();
-            TrafficCrossroad cross = entry.getValue();
+            TrafficCrossRoad cross = entry.getValue();
 
             int setting = cross.LightSettingHistory[time];
 
@@ -90,7 +90,7 @@ public class Main {
             }
 
             for (int i = 0; i < 4; i++) {
-                String dstId = cross.Neighbors[i];
+                String dstId = cross.getNeighbor(i);
                 if (dstId.compareTo(Constants.LIGHT_NONE) != 0) {
                     if (cnt > 0) {
                         sb.append(";");
@@ -140,7 +140,7 @@ public class Main {
         while (!"end".equalsIgnoreCase(flows_str)) {
 
             // 流量
-            traffic.loadFlowAddv2(flows_str, time);
+            traffic.addFlows(flows_str, time);
 
             //TODO  你的代码,注意，数据输出需保证一行输出，除了数据结果，请不要将任何无关数据或异常打印输出
             System.out.println(Process(flows_str, time, traffic));

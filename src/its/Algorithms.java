@@ -148,10 +148,10 @@ public class Algorithms {
      */
     private static void AddMapFlow(Map<String, float[]> flow, String frmId, String dstId,
                                    TrafficGraph traffic, float addf) {
-        TrafficCrossroad cross = traffic.mCrosses.get(dstId);
+        TrafficCrossRoad cross = traffic.getCrosses().get(dstId);
 
         if (cross != null) {
-            String[] nns = cross.Neighbors;
+            String[] nns = cross.getNeighbors();
 
             for (int i = 0; i < nns.length; i++) {
                 if (nns[i].compareTo(frmId) == 0) {
@@ -188,14 +188,14 @@ public class Algorithms {
             TrafficGraph traffic, Map<String, float[]> currentFlow, float[] turnProb) {
 
         Map<String, float[]> ret = new HashMap<String, float[]>();
-        for (String cid : traffic.mCrosses.keySet()) {
+        for (String cid : traffic.getCrosses().keySet()) {
             ret.put(cid, new float[4]);
         }
 
         for (Map.Entry<String, float[]> entry : currentFlow.entrySet()) {
             String cid = entry.getKey();
             float[] f = entry.getValue();
-            String[] nns = traffic.mCrosses.get(cid).Neighbors;
+            String[] nns = traffic.getCrosses().get(cid).getNeighbors();
 
             for (int i = 0; i < f.length; i++) {
                 String frm = cid;
@@ -328,7 +328,7 @@ public class Algorithms {
      * @return 是否违反公平原则
      */
     public static boolean IsMaxInterval(String cid, int time, int set, TrafficGraph traffic) {
-        int[] history = traffic.mCrosses.get(cid).LightSettingHistory;
+        int[] history = traffic.getCrosses().get(cid).LightSettingHistory;
 
         if (time <= Constants.MAX_LIGHT_INTERVAL) {
             return false;
