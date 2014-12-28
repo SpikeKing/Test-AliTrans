@@ -30,7 +30,7 @@ public class Main {
             String frmId = pp[1];
             int flow = Integer.parseInt(pp[2]);
 
-            TrafficCrossRoad cr = traffic.getCrosses().get(id);
+            TrafficCrossroad cr = traffic.getCrosses().get(id);
 
             for (int i = 0; i < cr.getNeighbors().length; i++) {
                 if (cr.getNeighbor(i).compareTo(frmId) == 0) {
@@ -54,9 +54,9 @@ public class Main {
         StringBuilder sb = new StringBuilder();
 
         int cnt = 0;
-        for (Map.Entry<String, TrafficCrossRoad> entry : traffic.getCrosses().entrySet()) {
+        for (Map.Entry<String, TrafficCrossroad> entry : traffic.getCrosses().entrySet()) {
             String cid = entry.getKey();
-            TrafficCrossRoad cross = entry.getValue();
+            TrafficCrossroad cross = entry.getValue();
 
             int setting = cross.LightSettingHistory[time];
 

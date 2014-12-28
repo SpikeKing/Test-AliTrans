@@ -148,7 +148,7 @@ public class Algorithms {
      */
     private static void AddMapFlow(Map<String, float[]> flow, String frmId, String dstId,
                                    TrafficGraph traffic, float addf) {
-        TrafficCrossRoad cross = traffic.getCrosses().get(dstId);
+        TrafficCrossroad cross = traffic.getCrosses().get(dstId);
 
         if (cross != null) {
             String[] nns = cross.getNeighbors();
