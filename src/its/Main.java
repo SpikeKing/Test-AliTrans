@@ -89,9 +89,22 @@ public class Main {
                 status[11] = 1;
             }
 
+            // 更新T型路口的方向
+            for (int i=0; i<4; ++i) {
+                String dir = cross.getNeighbor(i);
+                if (dir.equals(Constants.LIGHT_NONE)) {
+                    status[(i+1)%4*3 + 1] = -1;
+                    status[(i+3)%4*3] = -1;
+                    status[(i+2)%4*3 + 2] = -1;
+                    break;
+                }
+            }
+
             for (int i = 0; i < 4; i++) {
                 String dstId = cross.getNeighbor(i);
-                if (dstId.compareTo(Constants.LIGHT_NONE) != 0) {
+                if (!dstId.equals(Constants.LIGHT_NONE)) {
+
+                    // 除了第一个和最后一个不加，每个结束都加一个";"
                     if (cnt > 0) {
                         sb.append(";");
                     }
@@ -102,6 +115,7 @@ public class Main {
                     }
                 }
             }
+
         }
 
         return sb.toString();

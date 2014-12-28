@@ -132,6 +132,7 @@ public class TrafficGraph {
 
             for (String part : parts) {
                 String[] pp = part.split(",");
+
                 String dstId = pp[0]; // 目的
                 String frmId = pp[1]; // 来源
                 int flow = Integer.parseInt(pp[2]); // 流量
@@ -141,8 +142,11 @@ public class TrafficGraph {
 
                 // 存储每个节点的增量数据
                 if (cross != null) {
+
                     // 四个方向
                     for (int i = 0; i < 4; i++) {
+
+                        // 找到流量的来源点
                         if (cross.getNeighbor(i).equals(frmId)) {
 
                             // 每个时间段增加的流量
@@ -151,9 +155,8 @@ public class TrafficGraph {
                             // 添加总体流量
                             cross.addFlowOfTotal(i, flow);
 
+                            // 设置当前的流量
                             cross.setFlowOfCurrent(i, flow);
-
-                            // 每个时间段增加的流量
                         }
                     }
                 }
