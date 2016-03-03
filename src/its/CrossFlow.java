@@ -7,19 +7,27 @@ package its;
  * created by C.L.Wang
  */
 public class CrossFlow {
-    public int flowL2R;
-    public int flowL2U;
-    public int flowL2D;
 
-    public int flowU2D;
-    public int flowU2R;
-    public int flowU2L;
+    public float flowL2R;
+    public float flowL2U;
+    public float flowL2D;
 
-    public int flowR2L;
-    public int flowR2D;
-    public int flowR2U;
+    public float flowU2D;
+    public float flowU2R;
+    public float flowU2L;
 
-    public int flowD2U;
-    public int flowD2L;
-    public int flowD2R;
+    public float flowR2L;
+    public float flowR2D;
+    public float flowR2U;
+
+    public float flowD2U;
+    public float flowD2L;
+    public float flowD2R;
+
+    public float getAll() {
+        return flowL2R + flowL2U + flowL2D +
+                flowU2D + flowU2R + flowU2L +
+                flowR2L + flowR2D + flowR2U +
+                flowD2U + flowD2L + flowD2R;
+    }
 }

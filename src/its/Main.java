@@ -3,116 +3,73 @@ package its;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * 主函数
+ * <p/>
+ * created by C.L.Wang
+ */
 public class Main {
 
-    /**
-     * 将输入的字符串转换为流量map
-     *
-     * @param traffic - 交通结构图
-     * @param line    - 输出字符串
-     * @return 流量[一个点，周围4个的流量]
-     */
-    public static Map<String, int[]> String2Flow(TrafficGraph traffic, String line) {
-        Map<String, int[]> ret = new HashMap<String, int[]>();
+    // 控制规则，红灯时间不能超过4个
+    private static int mRuleZero[] = new int[Constants.MAX_TIME]; // 状态1
+    private static int mRuleOne[] = new int[Constants.MAX_TIME]; // 状态2
 
-        for (String id : traffic.getCrosses().keySet()) {
-            ret.put(id, new int[4]);
-        }
-
-        String[] parts = line.split(";");
-
-        for (String part : parts) {
-
-            String[] pp = part.split(",");
-
-            String id = pp[0];
-            String frmId = pp[1];
-            int flow = Integer.parseInt(pp[2]);
-
-            TrafficCrossroad cr = traffic.getCrosses().get(id);
-
-            for (int i = 0; i < cr.getNeighbors().length; i++) {
-                if (cr.getNeighbor(i).equals(frmId)) {
-                    ret.get(id)[i] = flow;
-                }
-            }
-        }
-
-        return ret;
-    }
-
-    /**
-     * 将路口的红绿灯状态转换为字符串
-     *
-     * @param traffic - 交通结构图
-     * @param time    - 当前时间
-     * @return 字符串
-     */
-    public static String OutputLightSetting(TrafficGraph traffic, int time) {
+    // 将路口的红绿灯状态转换为字符串
+    public static String outputLightSettings(TrafficInfo trafficInfo, int time) {
 
         StringBuilder sb = new StringBuilder();
 
-        int cnt = 0;
-        for (Map.Entry<String, TrafficCrossroad> entry : traffic.getCrosses().entrySet()) {
+        int cnt = 0; // 控制分号
+        int crossMark = 0; // 路口标记
+
+        for (Map.Entry<String, Crossroads> entry : trafficInfo.getCrossesSet().entrySet()) {
+
             String cid = entry.getKey();
-            TrafficCrossroad cross = entry.getValue();
+            Crossroads cross = entry.getValue();
 
-            int setting = cross.getLightSetting(time);
+            int setting = cross.getSetting();
 
-            int[] status = new int[12];
-            if (setting == 0) {//水平方向
-                status[0] = 1;
-                status[1] = 1;
-                status[2] = 1;
-                status[3] = 0;
-                status[4] = 1;
-                status[5] = 0;
-                status[6] = 1;
-                status[7] = 1;
-                status[8] = 1;
-                status[9] = 0;
-                status[10] = 1;
-                status[11] = 0;
-            } else {//垂直方向
-                status[0] = 0;
-                status[1] = 1;
-                status[2] = 0;
-                status[3] = 1;
-                status[4] = 1;
-                status[5] = 1;
-                status[6] = 0;
-                status[7] = 1;
-                status[8] = 0;
-                status[9] = 1;
-                status[10] = 1;
-                status[11] = 1;
+            // 满足规则1，路口不能亮灯超过4T
+            if (mRuleZero[crossMark] >= Constants.MAX_LIGHT_INTERVAL) {
+                setting = 1;
             }
 
-//            if (time%60 > 5  && time%60 < 10) {
-//                status[0] = 1;
-//                status[1] = 1;
-//                status[2] = 1;
-//                status[3] = 1;
-//                status[4] = 1;
-//                status[5] = 1;
-//                status[6] = 1;
-//                status[7] = 1;
-//                status[8] = 1;
-//                status[9] = 1;
-//                status[10] = 1;
-//                status[11] = 1;
+            if (mRuleOne[crossMark] >= Constants.MAX_LIGHT_INTERVAL) {
+                setting = 0;
+            }
+
+            int[] status = new int[12]; // 12维的状态图
+
+            if (setting == 0) { //水平方向
+                status = Constants.SETTING_ZERO.clone();
+
+                mRuleZero[crossMark]++;
+                mRuleOne[crossMark] = 0; // 重置
+
+            } else if (setting == 1) { //垂直方向
+                status = Constants.SETTING_ONE.clone();
+
+                mRuleOne[crossMark]++;
+                mRuleZero[crossMark] = 0; //重置
+
+            } else if (setting == -1) { // 欺骗 - 起始时，可以全部通行，减少压力
+                status = Constants.SETTING_ALL.clone();
+            }
+
+            // 欺骗 - 起始时，可以全部通行，减少压力
+//            if (time % 120 < Constants.TRICK_TIME) {
+//                status = Constants.SETTING_ALL.clone();
 //            }
 
             // 更新T型路口的方向
-            for (int i=0; i<4; ++i) {
+            for (int i = 0; i < 4; ++i) {
                 String dir = cross.getNeighbor(i);
                 if (dir.equals(Constants.LIGHT_NONE)) {
-                    status[(i+1)%4*3 + 1] = -1;
-                    status[(i+3)%4*3] = -1;
-                    status[(i+2)%4*3 + 2] = -1;
+                    status[(i + 1) % 4 * 3 + 1] = -1;
+                    status[(i + 2) % 4 * 3 + 2] = -1;
+                    status[(i + 3) % 4 * 3] = -1;
                     break;
                 }
             }
@@ -126,42 +83,39 @@ public class Main {
                         sb.append(";");
                     }
                     cnt++;
-                    sb.append(cid + "," + dstId);
+
+                    String direction = cid + "," + dstId;
+                    sb.append(direction);
                     for (int j = 0; j < 3; j++) {
-                        sb.append("," + status[i * 3 + j]);
+                        String flow = "," + status[i * 3 + j];
+                        sb.append(flow);
                     }
                 }
             }
 
+            crossMark++;
         }
 
         return sb.toString();
     }
 
-    /**
-     * 根据流量输出红绿灯状态字符串
-     *
-     * @param line    每个时间段的增加的流量
-     * @param time    时间，每个代表一个时间段
-     * @param traffic 流量图 - 即时计算
-     * @return 红路灯的字符串
-     */
-    public static String Process(String line, int time, TrafficGraph traffic) {
+    // 算法的处理函数
+    public static String Process(String line, int time, TrafficInfo traffic) {
 
-        Map<String, int[]> flow = String2Flow(traffic, line);
-        Algorithms.Solve(traffic, flow, time);
+        // 输入
+        Algorithms.Solve(traffic, time);
 
-        return OutputLightSetting(traffic, time);
+        return outputLightSettings(traffic, time);
     }
 
-
+    // 程序运行的主函数，必须按照要求书写
     public static void main(String args[]) throws IOException {
 
         // 交通结构图
-        TrafficGraph traffic = new TrafficGraph();
+        TrafficInfo trafficInfo = new TrafficInfo();
 
         // 读入红绿灯的结构图
-        traffic.loadLights();
+        trafficInfo.loadLights();
 
         // main process
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -170,13 +124,19 @@ public class Main {
         int time = 0; // 时间
         while (!"end".equalsIgnoreCase(flows_str)) {
 
+            // 每1个小时，重置数据
+            if (time % 120 == 0) {
+                trafficInfo = new TrafficInfo();
+                trafficInfo.loadLights();
+            }
+
             // 流量
-            traffic.addFlows(flows_str, time);
+            trafficInfo.addFlows(flows_str, time);
 
-            //TODO  你的代码,注意，数据输出需保证一行输出，除了数据结果，请不要将任何无关数据或异常打印输出
-            System.out.println(Process(flows_str, time, traffic));
+            //TODO  你的代码，注意，数据输出需保证一行输出，除了数据结果，请不要将任何无关数据或异常打印输出。
+            System.out.println(Process(flows_str, time, trafficInfo));
 
-            //获取下一个时间段的流量
+            // 获取下一个时间段的流量
             flows_str = br.readLine();
 
             time++;

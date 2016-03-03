@@ -1,11 +1,12 @@
 package its;
 
 /**
- * 交通灯机构图
- *
+ * 交通灯结构图
+ * <p/>
  * Created by C.L.Wang on 14-12-27.
  */
 public class LightsStructure {
+
     public static final String LIGHTS_STRUCTURE = "tl44,tl42,tl43,#,tl19;" +
             "tl44,tl43,tl19,tl42,#;" +
             "tl44,tl19,#,tl43,tl42;" +
@@ -28,22 +29,69 @@ public class LightsStructure {
             "tl39,tl16,tl40,#,tl23;" +
             "tl38,tl12,tl37,#,tl5;" +
             "tl38,tl37,tl5,tl12,#;" +
-            "tl38,tl5,#,tl37,tl12;tl37,tl38,tl11,tl4,tl36;" +
-            "tl37,tl11,tl36,tl38,tl4;tl37,tl36,tl4,tl11,tl38;tl37,tl4,tl38,tl36,tl11;tl36,tl37,tl10,tl3,#;" +
-            "tl36,tl10,#,tl37,tl3;tl36,tl3,tl37,#,tl10;tl35,tl52,tl58,tl28,tl34;tl35,tl58,tl34,tl52,tl28;" +
-            "tl35,tl34,tl28,tl58,tl52;tl35,tl28,tl52,tl34,tl58;tl34,tl35,tl57,tl27,tl33;tl34,tl57,tl33,tl35,tl27;" +
-            "tl34,tl33,tl27,tl57,tl35;tl34,tl27,tl35,tl33,tl57;tl33,tl34,tl56,tl26,tl32;tl33,tl56,tl32,tl34,tl26;" +
-            "tl33,tl32,tl26,tl56,tl34;tl33,tl26,tl34,tl32,tl56;tl32,tl33,tl55,tl25,tl31;tl32,tl55,tl31,tl33,tl25;" +
-            "tl32,tl31,tl25,tl55,tl33;tl32,tl25,tl33,tl31,tl55;tl31,tl32,#,tl24,tl30;tl31,tl30,tl24,#,tl32;" +
-            "tl31,tl24,tl32,tl30,#;tl30,tl31,tl54,tl23,tl29;tl30,tl54,tl29,tl31,tl23;tl30,tl29,tl23,tl54,tl31;" +
-            "tl30,tl23,tl31,tl29,tl54;tl29,tl30,tl53,tl22,tl51;tl29,tl53,tl51,tl30,tl22;tl29,tl51,tl22,tl53,tl30;" +
-            "tl29,tl22,tl30,tl51,tl53;tl28,tl35,tl27,#,tl21;tl28,tl27,tl21,tl35,#;tl28,tl21,#,tl27,tl35;tl27,tl28,tl34,tl20,tl26;" +
-            "tl27,tl34,tl26,tl28,tl20;tl27,tl26,tl20,tl34,tl28;tl27,tl20,tl28,tl26,tl34;tl26,tl27,tl33,tl42,tl25;" +
-            "tl26,tl33,tl25,tl27,tl42;tl26,tl25,tl42,tl33,tl27;tl26,tl42,tl27,tl25,tl33;tl25,tl26,tl32,tl41,tl24;" +
-            "tl25,tl32,tl24,tl26,tl41;tl25,tl24,tl41,tl32,tl26;tl25,tl41,tl26,tl24,tl32;tl24,tl25,tl31,tl40,tl23;" +
-            "tl24,tl31,tl23,tl25,tl40;tl24,tl23,tl40,tl31,tl25;tl24,tl40,tl25,tl23,tl31;tl23,tl24,tl30,tl39,tl22;" +
-            "tl23,tl30,tl22,tl24,tl39;tl23,tl22,tl39,tl30,tl24;tl23,tl39,tl24,tl22,tl30;tl22,tl23,tl29,tl14,#;" +
-            "tl22,tl29,#,tl23,tl14;tl22,tl14,tl23,#,tl29;tl21,tl28,tl20,#,tl6;tl21,tl20,tl6,tl28,#;" +
+            "tl38,tl5,#,tl37,tl12;" +
+            "tl37,tl38,tl11,tl4,tl36;" +
+            "tl37,tl11,tl36,tl38,tl4;" +
+            "tl37,tl36,tl4,tl11,tl38;" +
+            "tl37,tl4,tl38,tl36,tl11;" +
+            "tl36,tl37,tl10,tl3,#;" +
+            "tl36,tl10,#,tl37,tl3;" +
+            "tl36,tl3,tl37,#,tl10;" +
+            "tl35,tl52,tl58,tl28,tl34;" +
+            "tl35,tl58,tl34,tl52,tl28;" +
+            "tl35,tl34,tl28,tl58,tl52;" +
+            "tl35,tl28,tl52,tl34,tl58;" +
+            "tl34,tl35,tl57,tl27,tl33;" +
+            "tl34,tl57,tl33,tl35,tl27;" +
+            "tl34,tl33,tl27,tl57,tl35;" +
+            "tl34,tl27,tl35,tl33,tl57;" +
+            "tl33,tl34,tl56,tl26,tl32;" +
+            "tl33,tl56,tl32,tl34,tl26;" +
+            "tl33,tl32,tl26,tl56,tl34;" +
+            "tl33,tl26,tl34,tl32,tl56;" +
+            "tl32,tl33,tl55,tl25,tl31;" +
+            "tl32,tl55,tl31,tl33,tl25;" +
+            "tl32,tl31,tl25,tl55,tl33;" +
+            "tl32,tl25,tl33,tl31,tl55;" +
+            "tl31,tl32,#,tl24,tl30;" +
+            "tl31,tl30,tl24,#,tl32;" +
+            "tl31,tl24,tl32,tl30,#;" +
+            "tl30,tl31,tl54,tl23,tl29;" +
+            "tl30,tl54,tl29,tl31,tl23;" +
+            "tl30,tl29,tl23,tl54,tl31;" +
+            "tl30,tl23,tl31,tl29,tl54;" +
+            "tl29,tl30,tl53,tl22,tl51;" +
+            "tl29,tl53,tl51,tl30,tl22;" +
+            "tl29,tl51,tl22,tl53,tl30;" +
+            "tl29,tl22,tl30,tl51,tl53;" +
+            "tl28,tl35,tl27,#,tl21;" +
+            "tl28,tl27,tl21,tl35,#;" +
+            "tl28,tl21,#,tl27,tl35;" +
+            "tl27,tl28,tl34,tl20,tl26;" +
+            "tl27,tl34,tl26,tl28,tl20;" +
+            "tl27,tl26,tl20,tl34,tl28;" +
+            "tl27,tl20,tl28,tl26,tl34;" +
+            "tl26,tl27,tl33,tl42,tl25;" +
+            "tl26,tl33,tl25,tl27,tl42;" +
+            "tl26,tl25,tl42,tl33,tl27;" +
+            "tl26,tl42,tl27,tl25,tl33;" +
+            "tl25,tl26,tl32,tl41,tl24;" +
+            "tl25,tl32,tl24,tl26,tl41;" +
+            "tl25,tl24,tl41,tl32,tl26;" +
+            "tl25,tl41,tl26,tl24,tl32;" +
+            "tl24,tl25,tl31,tl40,tl23;" +
+            "tl24,tl31,tl23,tl25,tl40;" +
+            "tl24,tl23,tl40,tl31,tl25;" +
+            "tl24,tl40,tl25,tl23,tl31;" +
+            "tl23,tl24,tl30,tl39,tl22;" +
+            "tl23,tl30,tl22,tl24,tl39;" +
+            "tl23,tl22,tl39,tl30,tl24;" +
+            "tl23,tl39,tl24,tl22,tl30;" +
+            "tl22,tl23,tl29,tl14,#;" +
+            "tl22,tl29,#,tl23,tl14;" +
+            "tl22,tl14,tl23,#,tl29;" +
+            "tl21,tl28,tl20,#,tl6;" +
+            "tl21,tl20,tl6,tl28,#;" +
             "tl21,tl6,#,tl20,tl28;tl20,tl21,tl27,#,tl19;tl20,tl27,tl19,tl21,#;tl20,tl19,#,tl27,tl21;" +
             "tl19,tl20,tl44,tl12,tl18;tl19,tl44,tl18,tl20,tl12;tl19,tl18,tl12,tl44,tl20;tl19,tl12,tl20,tl18,tl44;" +
             "tl18,tl19,tl43,tl11,tl17;tl18,tl43,tl17,tl19,tl11;tl18,tl17,tl11,tl43,tl19;tl18,tl11,tl19,tl17,tl43;" +
